@@ -1,0 +1,29 @@
+{
+  "name": "bark-monitor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "chart.js": "^2.7.1",
+    "date-fns": "^1.29.0",
+    "eslint": "^4.17.0",
+    "howler": "^2.0.9"
+  },
+  "devDependencies": {
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "parcel": "^2.0.0-beta.2",
+    "parcel-bundler": "^1.12.5"
+  },
+  "scripts": {
+    "test": "dev",
+    "dev": "parcel ./src/index.html",
+    "build": "parcel build ./src/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "description": ""
+}
