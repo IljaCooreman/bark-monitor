@@ -7,6 +7,8 @@ import distanceInWords from 'date-fns/distance_in_words'
 const stopAudio = document.querySelector('#stop-audio')
 const form = document.querySelector('form')
 const toggleAudioButton = document.getElementById('toggle-audio')
+const toggleWakelockButton = document.getElementById('toggle-wakelock')
+const statusElem = document.getElementById('status-element')
 // const saveButton = document.getElementById('save-session')
 
 toggleAudioButton.addEventListener('click',
@@ -17,6 +19,11 @@ toggleAudioButton.addEventListener('click',
       startRecording()
     }, settings.delayBeforeRecording * 60 * 1000)
     toggleAudioButton.innerHTML = `waarschuwingen AAN`
+  })
+
+toggleWakelockButton.addEventListener('click',
+  () => {
+    settings.isWakelockActive ? cancelWakelock() : requestWakelock()
   })
 
 const startRecording = () => {
@@ -71,38 +78,6 @@ const save = () => {
 let barkCount = 0
 
 const chart = init()
-
-// const getPercentile = (array, percentile) => {
-//   const values = array.sort((previous, current) => previous - current)
-//   const perc = Math.floor(values.length * percentile)
-//   return values.length % 2 ? values[perc] : (values[perc - 1] + values[perc]) / 2
-// }
-
-// const analyseStream = (stream) => {
-//   if (!settings.recording) return
-//   // check avg
-//   const sum = stream.reduce((previous, current) => current + Math.abs(previous))
-//   const avg = Math.abs((sum / stream.length) * 1000)
-
-//   const time = new Date().getTime()
-//   if (time % 3) addToStreamHistory({ avg, time })
-
-//   if (avg > settings.treshhold) {
-//     handleBark(time, avg)
-//   }
-// }
-
-// const addToStreamHistory = (obj) => {
-//   if (streamHistory.length > 0 && (streamHistory[streamHistory.length - 1].time - streamHistory[0].time) / 1000 > 30) streamHistory.shift()
-//   if (settings.recording) {
-//     streamHistory.push(obj)
-//   }
-//   if (obj.time % (10) === 0) {
-//     // const sum = streamHistory.map(obj => obj.avg).reduce((previous, current) => current + previous)
-//     // const avg = (sum / streamHistory.length)
-
-//   }
-// }
 
 const suspendRecording = (settings, time) => {
   settings.recording = false
@@ -272,3 +247,50 @@ navigator.mediaDevices.getUserMedia({ audio: true, video: false })
     console.log(`error bitch`)
     document.body.style.backgroundColor = '#881c02'
   })
+
+// ################### - wakelock - ##################### //
+let wlSentinel = null
+
+function requestWakelock () {
+  // create an async function to request a wake lock
+  try {
+    navigator.wakeLock.request('screen')
+      .then(wls => {
+        wlSentinel = wls
+        console.log(wlSentinel)
+        statusElem.textContent = 'Wake Lock is active!'
+        settings.isWakelockActive = true
+        toggleWakelockButton.style.backgroundColor = 'red'
+        toggleWakelockButton.innerHTML = `Wakelock is on`
+
+        wls.addEventListener('release', () => {
+          console.log('Screen Wake Lock released:', wlSentinel.released)
+        })
+      })
+  } catch (err) {
+    // The Wake Lock request has failed - usually system related, such as battery.
+    statusElem.textContent = `${err.name}, ${err.message}`
+  }
+}
+
+function cancelWakelock () {
+  try {
+    wlSentinel.release()
+    statusElem.textContent = ''
+    toggleWakelockButton.style.backgroundColor = 'rgb(239, 239, 239)'
+    toggleWakelockButton.innerHTML = `Wakelock is off`
+  } catch (err) {
+    statusElem.textContent = `${err.name}, ${err.message}`
+  }
+
+  settings.isWakelockActive = false
+}
+
+// make sure wakelock activates again after switching pages
+const handleVisibilityChange = () => {
+  if (wlSentinel !== null && document.visibilityState === 'visible') {
+    requestWakelock()
+  }
+}
+
+document.addEventListener('visibilitychange', handleVisibilityChange)

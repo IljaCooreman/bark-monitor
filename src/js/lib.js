@@ -10,7 +10,8 @@ export const settings = {
   audioResetTime: 3,
   delayBeforeRecording: 0.1, // in minutes
   loudCountBeforeWarning: 10, // amount of consecutive 'loud'samples
-  chartInterval: 0.1
+  chartInterval: 0.1,
+  isWakelockActive: false // wakelock prevents the pc from going to sleep
 }
 
 export const chartSettings = {
