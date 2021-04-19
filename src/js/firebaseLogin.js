@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
 import { settings } from './lib'
+import {startRecording, stopRecording} from './script'
 var firebaseui = require('firebaseui')
 
 var firebaseConfig = {
@@ -57,6 +58,7 @@ firebase.auth().onAuthStateChanged((user) => {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     settings.isLoggedIn = true
+    listenForSettings(settings)
   } else {
     settings.isLoggedIn = false
   }
@@ -72,7 +74,7 @@ export function storeBark (sessionId, volume, type = 'bark') {
   }
   const db = firebase.firestore()
   return db
-    .collection('users').doc('ilja.cooreman@gmail.com')
+    .collection('users').doc(user.email)
     .collection('sessions').doc(String(sessionId))
     .collection('barks')
     .add({
@@ -80,6 +82,39 @@ export function storeBark (sessionId, volume, type = 'bark') {
       user: user.email,
       type,
       volume
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export function listenForSettings (settings) {
+  var user = firebase.auth().currentUser
+  if (!user) {
+    console.log('not signed in, could not fetch settings')
+    return
+  }
+  const db = firebase.firestore()
+  db.collection('users').doc(user.email)
+    .onSnapshot((doc) => {
+      console.log('Current data: ', doc.data())
+      settings.recording = doc.data().recording
+      doc.data().recording ? startRecording() : stopRecording()
+    })
+}
+
+export function setRecording (recording) {
+  settings.recording = recording
+  var user = firebase.auth().currentUser
+  if (!user) {
+    console.log('not signed in, not uploading to cloud')
+    return
+  }
+  const db = firebase.firestore()
+  return db
+    .collection('users').doc(user.email)
+    .update({
+      recording
     })
     .catch(err => {
       console.log(err)

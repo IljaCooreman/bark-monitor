@@ -3,7 +3,7 @@ import { settings, warnings, barks, loudFreqs, chartData } from './lib'
 import { updateUi, init } from './init'
 import format from 'date-fns/format'
 import distanceInWords from 'date-fns/distance_in_words'
-import { storeBark } from './firebaseLogin'
+import { storeBark, setRecording } from './firebaseLogin'
 
 const stopAudio = document.querySelector('#stop-audio')
 const form = document.querySelector('form')
@@ -29,25 +29,31 @@ toggleWakelockButton.addEventListener('click',
     settings.isWakelockActive ? cancelWakelock() : requestWakelock()
   })
 
-const startRecording = () => {
+export const startRecording = () => {
   settings.playWarnings = true
-  settings.recording = true
+  setRecording(true)
   document.querySelector('body').style.border = '4px solid #f54e38'
   stopAudio.disabled = false
   chartData.start = new Date().getTime()
   sessionId = new Date().toISOString()
+  storeBark(sessionId, null, 'start')
+}
+
+export const stopRecording = () => {
+  settings.playWarnings = false
+  setRecording(false)
+  toggleAudioButton.disabled = settings.playWarnings
+  document.querySelector('body').style.border = '4px solid #efefef'
+  stopAudio.disabled = true
+  chartData.end = new Date().getTime()
+  storeBark(sessionId, null, 'stop')
 }
 
 stopAudio.addEventListener('click',
   () => {
-    settings.playWarnings = false
-    settings.recording = false
-    toggleAudioButton.disabled = settings.playWarnings
-    document.querySelector('body').style.border = '4px solid #efefef'
-    stopAudio.disabled = true
+    stopRecording()
     cancelWakelock()
     if (barks[barks.length - 1].time - chartData.start > 250000) save()
-    chartData.end = new Date().getTime()
   })
 
 form.addEventListener('change', (e) => {
