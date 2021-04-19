@@ -1,91 +1,17 @@
 <html>
-
 <head>
-    <title>bark monitor</title>
-    <meta charset="UTF-8">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        button {
-            padding: 15px;
-            /* border-radius: 10px; */
-        }
-
-        label {
-            min-width: 100px;
-            width: 100px;
-            text-align: right;
-        }
-
-        button:hover:not([disabled]) {
-            background-color: #38abf5;
-            color: white;
-        }
-
-        .border {
-            border: 1px solid #bdbdbd;
-            border-radius: 10px;
-            margin: 5px;
-            padding: 5px;
-            background: white;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
+    <title>bark monitor Landing page</title>
 </head>
 
-<body style="margin: 0; padding: 15px; position: relative; border: 4px solid white; background: #efefef">
-    <h1>bark monitor</h1>
-    <audio preload="auto" id="audio1">
-        <source src="audio/ilja1.mp3" type="audio/mpeg">
-    </audio>
-    <audio preload="auto" id="audio2">
-        <source src="audio/ilja2.mp3" type="audio/mpeg">
-    </audio>
-    <audio preload="auto" id="audio3">
-        <source src="audio/ilja3.mp3" type="audio/mpeg">
-    </audio>
-    <audio preload="auto" id="audio4">
-        <source src="audio/ilja4.mp3" type="audio/mpeg">
-    </audio>
-    <audio preload="auto" id="audio5">
-        <source src="audio/ilja5.mp3" type="audio/mpeg">
-    </audio>
-    <audio preload="auto" id="audio6">
-        <source src="audio/ilja6.mp3" type="audio/mpeg">
-    </audio>
-    <audio preload="auto" id="audio7">
-        <source src="audio/ilja7.mp3" type="audio/mpeg">
-    </audio>
-    <button id='toggle-audio'>start metingen binnen 2 minuten</button>
-    <button id='stop-audio' disabled>STOP</button>
-    <button id='toggle-wakelock'>toggle wakelock</button>
-    <div id="status-element"></div>
-
-    <div id="total-bark-count"></div>
-    <div id="total-warning-count"></div>
-    <div class="border" style="position: relative; height:40vh; width:100%">
-        <canvas id="myChart"></canvas>
-    </div>
-    <form class="border">
-        <h2>Instellingen</h2>
-        <div><label>gevoeligheid</label><input id="treshhold" type="range" step="1" min="10" max="300"><label
-                id="treshholdLabel">??</label></div>
-        <div><label>aantal blafjes voor waarschuwing</label><input id="barksBetweenAudio" type="number" min="1"
-                max="10"></div>
-    </form>
-    <canvas height="400" width="600" id="oscilloscope"></canvas>
-
-    <div class="border">
-        <h2>Geschiedenis</h2>
-        <ul id="history-list">
-
-        </ul>
-    </div>
-
-    <script src='./js/script.js'></script>
-
-
+<body>
+<h1>Barkmonitor login</h1>
+<div id="firebaseui-auth-container"></div>
+<div id="loader">Loading...</div>
 </body>
+<script src='./js/firebaseLogin.js'></script>
+<a href="barkmonitor.html">to barkmonitor</a>
 
 </html>

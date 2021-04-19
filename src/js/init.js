@@ -44,7 +44,6 @@ export const updateChart = (chart) => {
     if (i === 0) {
       dataset.data = data.countArray
     } else {
-      console.log(data.colorArray)
       dataset.data = data.colorArray
       dataset.backgroundColor = 'rgba(255, 100, 100, 1)'
     }

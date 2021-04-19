@@ -3,6 +3,7 @@ import { settings, warnings, barks, loudFreqs, chartData } from './lib'
 import { updateUi, init } from './init'
 import format from 'date-fns/format'
 import distanceInWords from 'date-fns/distance_in_words'
+import { storeBark } from './firebaseLogin'
 
 const stopAudio = document.querySelector('#stop-audio')
 const form = document.querySelector('form')
@@ -10,9 +11,11 @@ const toggleAudioButton = document.getElementById('toggle-audio')
 const toggleWakelockButton = document.getElementById('toggle-wakelock')
 const statusElem = document.getElementById('status-element')
 // const saveButton = document.getElementById('save-session')
+let sessionId = new Date().toISOString()
 
 toggleAudioButton.addEventListener('click',
   () => {
+    requestWakelock()
     document.querySelector('body').style.border = '4px dotted orange'
     toggleAudioButton.disabled = true
     setTimeout(() => {
@@ -32,6 +35,7 @@ const startRecording = () => {
   document.querySelector('body').style.border = '4px solid #f54e38'
   stopAudio.disabled = false
   chartData.start = new Date().getTime()
+  sessionId = new Date().toISOString()
 }
 
 stopAudio.addEventListener('click',
@@ -41,6 +45,7 @@ stopAudio.addEventListener('click',
     toggleAudioButton.disabled = settings.playWarnings
     document.querySelector('body').style.border = '4px solid #efefef'
     stopAudio.disabled = true
+    cancelWakelock()
     if (barks[barks.length - 1].time - chartData.start > 250000) save()
     chartData.end = new Date().getTime()
   })
@@ -91,9 +96,12 @@ const suspendRecording = (settings, time) => {
 
 const handleBark = (timestamp, volume) => {
   console.log(`bark!, ${format(timestamp, 'H:mm')} peak`, volume)
+  // if logged in ...
+  storeBark(sessionId, volume, 'bark')
   barks.push({
     time: timestamp,
-    volume: volume
+    volume: volume,
+    type: 'bark'
   })
   suspendRecording(settings, settings.interval)
 
@@ -252,6 +260,7 @@ navigator.mediaDevices.getUserMedia({ audio: true, video: false })
 let wlSentinel = null
 
 function requestWakelock () {
+  if (settings.isWakelockActive) return
   // create an async function to request a wake lock
   try {
     navigator.wakeLock.request('screen')
