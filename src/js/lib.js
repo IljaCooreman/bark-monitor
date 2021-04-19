@@ -8,7 +8,7 @@ export const settings = {
   timeBetweenAudio: 10,
   barksBetweenAudio: 2,
   audioResetTime: 3,
-  delayBeforeRecording: 0.01, // in minutes
+  delayBeforeRecording: 3, // in minutes
   loudCountBeforeWarning: 10, // amount of consecutive 'loud'samples
   chartInterval: 0.5,
   isWakelockActive: false, // wakelock prevents the pc from going to sleep
