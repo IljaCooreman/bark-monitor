@@ -34,7 +34,7 @@ var uiConfig = {
   },
   // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
   signInFlow: 'popup',
-  signInSuccessUrl: 'barkmonitor.html',
+  signInSuccessUrl: 'index.html',
   signInOptions: [
     // Leave the lines as is for the providers you want to offer your users.
     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -59,6 +59,8 @@ firebase.auth().onAuthStateChanged((user) => {
     // https://firebase.google.com/docs/reference/js/firebase.User
     settings.isLoggedIn = true
     listenForSettings(settings)
+    console.log('auth changed to ', !!user)
+    document.getElementById('firebaseui-auth-container').style.display = 'none'
   } else {
     settings.isLoggedIn = false
   }
